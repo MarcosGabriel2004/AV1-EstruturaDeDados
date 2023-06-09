@@ -5,6 +5,9 @@
 #define MAX_STRING 31
 #define MAX_QTD 50
 
+
+
+
 void setup(float prec[MAX_QTD], int* qtd, int car[MAX_QTD], int qtdCar[MAX_QTD]){
 	int i;
 	
