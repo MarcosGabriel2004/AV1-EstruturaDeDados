@@ -12,43 +12,48 @@ typedef struct produto {
 } Produto, *PProduto,**PPProduto;
 
 
-void inicializa_lista_produtos(PPProduto lista){
-    lista = (PPProduto) malloc(1*sizeof(PProduto));
-    PProduto produto = (PProduto) malloc(1*sizeof(Produto));
-    produto = NULL; 
-    lista[0] = produto;             
-                     
-}
-
-//Limpa o buffer do teclado
-void limparBuffer(){
-    int ch;
-    do {
-        ch = fgetc(stdin);
-    } while (ch != EOF && ch != '\n');
-}
-
-void incluir_produto_estoque(PPProduto lista,int* ultimo_item_indice){
-    
-
-   int novo_indice = *ultimo_item_indice+1;
-    
-   PProduto produto = lista[*ultimo_item_indice];
+void incluir_produto_estoque(PPProduto* lista,int* qtd_itens_estoque){
+   int novo_indice = -1;
+  
+   
+   if (*qtd_itens_estoque == 0){
+            novo_indice = 1;
+            *lista = (PPProduto) malloc(sizeof(PProduto)); 
+             
+            } 
+   else{
+        novo_indice = *qtd_itens_estoque+1;
+        *lista = (PPProduto) realloc(*lista, novo_indice*sizeof(PProduto));
+        }
+       
+        
+   if(!lista){ 
+		printf("PROBLEMA NA ALOCAÇÃO DA LSITA\n\n");
+		system("PAUSE");
+		}
+		
+   PProduto produto = (PProduto) malloc(sizeof(Produto));
+   if(!produto){ 
+    	printf("PROBLEMA NA ALOCAÇÃO DO PRODUTO\n\n");
+    	system("PAUSE");
+	}
+	
+   
+   
    printf("Cadastrando produto cod(%d)\n\n",novo_indice);
-   produto[*ultimo_item_indice].codigo = novo_indice;
+   produto->codigo = novo_indice;
    printf("Informe a Descricao do Produto: "); 
-   scanf(" %[^\n]",produto[*ultimo_item_indice].descricao);
+   scanf(" %[^\n]",produto->descricao);
    printf("Informe a Quantidade em estoque: "); 
-   scanf("%d",&produto[*ultimo_item_indice].qtd_estoque);
+   scanf("%d",&(produto->qtd_estoque));
    printf("Informe a Valor do produto: "); 
-   scanf("%f",&produto[*ultimo_item_indice].preco);
-    printf("\nxxxxxxxxantgesxxxxxxxxxxxxxxxxxxxxx"); 
-   getch();
-   PPProduto nova_lista = (PPProduto) realloc(lista,novo_indice*sizeof(PProduto));
-    printf("\nxxxxxxxxdepoisxxxxxxxxxxxxxxxxxxxxx"); 
-   getch(); 
-   lista = nova_lista;
-   *ultimo_item_indice = novo_indice; 
+   scanf("%f",&(produto->preco));
+   
+   
+  (*lista)[*qtd_itens_estoque] = produto;  
+   *qtd_itens_estoque = novo_indice;
+   
+   
    printf("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); 
    printf("\n Produto incluido com sucesso!!!");
    printf("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); 
@@ -56,17 +61,31 @@ void incluir_produto_estoque(PPProduto lista,int* ultimo_item_indice){
    printf("\n\nIncluir novo Produto?\nDigite: S -> ");
    char again = 'n';
    scanf(" %c",&again);
-   //limparBuffer();
-   printf("\n-->%c<---\n",again);
   
    if (again == 'S' || again == 's' ){
-      incluir_produto_estoque(lista,ultimo_item_indice);
+      incluir_produto_estoque(lista,qtd_itens_estoque);
    } 	
                       
             
   
 }
-
+void exibir_produtos_estoque(PPProduto lista,int qtd_itens_estoque){
+     printf("\n\n");
+     float total_geral = 0.0;
+     for(int i=0; i < qtd_itens_estoque; i++){
+             PProduto prod = lista[i];
+             float total_prod = prod->qtd_estoque * prod->preco;
+             total_geral += total_prod;
+             printf("COD: %d - %s - Qtd em estoque: %d, ",prod->codigo, prod->descricao, prod->qtd_estoque);
+             printf("Valor unitario R$ %.2f Total R$ %.2f\n",prod->preco,total_prod);
+            
+            getch();
+             }
+             
+             getch();
+     printf("\n\n VALORT TOTAL DO ESTOQUE R$ %.2f EM %d ITENS\n",total_geral,qtd_itens_estoque);
+     
+     }
 
 int menu_principal_opcoes(){
 	int opcao;
@@ -115,7 +134,7 @@ int menu_gerenciar_pedido_opcoes(){
 	return opcao;
 }
 
-void gerenciar_menu_produto(PPProduto estoque,int* ind_estoque){
+void gerenciar_menu_produto(PPProduto* estoque,int* qtd_itens_estoque){
 	int opcao;
 	int sair = 0;
 	do{	
@@ -123,18 +142,29 @@ void gerenciar_menu_produto(PPProduto estoque,int* ind_estoque){
 		switch(opcao){
 			case 1:
                 system("CLS");
+                printf("\n######################");
 				printf("Incluindo Produto\n\n");
-                incluir_produto_estoque(estoque,ind_estoque);
-                sair = 1;  
-				getch();
+				printf("\n######################");
+                incluir_produto_estoque(estoque,qtd_itens_estoque);
+                sair = 0;  
+				//getch();
 				break;
 			case 2:
+                printf("\n######################");
 				printf("Alterar Produto");
+				printf("\n######################");
+				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
+				printf("\n\n ");
 				getch();
 				break;								
 			case 3:
-				printf("Listar produtos");
-				sair = 1;
+                system("CLS");
+                printf("\n######################");
+				printf("Relacao de produtos no estoque");
+				printf("\n######################");
+				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
+                sair = 0;
+                getch();
 				break;
 			case 4:
 				printf("Consultar Produto");				
@@ -200,14 +230,14 @@ void gerenciar_menu_pedido(){
 	
 }
 
-void gerenciar_menu_principal(PPProduto estoque,int* ind_estoque){
+void gerenciar_menu_principal(PPProduto* estoque,int* qtd_itens_estoque){
 	int opcao;
 	int sair = 0;
 	do{	
 		opcao = menu_principal_opcoes();		
 		switch(opcao){
 			case 1:				
-				gerenciar_menu_produto(estoque,ind_estoque);
+				gerenciar_menu_produto(estoque,qtd_itens_estoque);
 				getch();
 				break;
 			case 2:			
@@ -228,10 +258,8 @@ void gerenciar_menu_principal(PPProduto estoque,int* ind_estoque){
 }
 
 int main(int argc, char *argv[]) {
-    printf("oi!");
-    PProduto estoque;
-    inicializa_lista_produtos(&estoque);
-    int ultimo_item_indice_estoque = 0;
-	gerenciar_menu_principal(&estoque,&ultimo_item_indice_estoque);	
+    PPProduto estoque;
+    int qtd_itens_estoque = 0;
+	gerenciar_menu_principal(&estoque,&qtd_itens_estoque);	
 	return 0;
 }
