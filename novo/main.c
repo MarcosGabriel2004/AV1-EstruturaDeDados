@@ -69,10 +69,51 @@ void incluir_produto_estoque(PPProduto* lista,int* qtd_itens_estoque){
             
   
 }
+
+int codigo_existe(PPProduto lista,int qtd_itens_estoque, int codigo_para_verificar){
+    int i;
+    for(i=0; i < qtd_itens_estoque; i++){
+             if(lista[i]->codigo == codigo_para_verificar){
+                                 return 1;
+                                 }
+             }
+    printf("\n ---------------------------------------------");
+    printf("\n NENHUM ITEM NO ESTOQUE COM O CODIGO '%d'...",codigo_para_verificar);
+    printf("\n ---------------------------------------------");
+    return 0;
+    }
+void limparBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        // Descartar caractere
+    }
+}
+int menu_escolha_item(PPProduto lista,int qtd_itens_estoque, char msgm[]){
+     if(qtd_itens_estoque == 0 ){
+     return 0;
+     }
+     int cod = 0;
+     do{
+        printf("\n\n ");
+        printf(msgm);
+        scanf("%d",&cod);
+        limparBuffer();          
+     }while(!codigo_existe(lista,qtd_itens_estoque,cod));
+     return cod;
+}
+
 void exibir_produtos_estoque(PPProduto lista,int qtd_itens_estoque){
      printf("\n\n");
+     
+     if(qtd_itens_estoque == 0){
+             printf("\n ---------------------------------------------");
+             printf("\nNENHUM ITEM NO ESTOQUE CADASTRE ALGUM ITEM.");
+             printf("\n ---------------------------------------------");
+             return;             
+     }
      float total_geral = 0.0;
      int i;
+     
      for(i=0; i < qtd_itens_estoque; i++){
              PProduto prod = lista[i];
              float total_prod = prod->qtd_estoque * prod->preco;
@@ -81,7 +122,7 @@ void exibir_produtos_estoque(PPProduto lista,int qtd_itens_estoque){
              printf("Valor unitario R$ %.2f Total R$ %.2f\n",prod->preco,total_prod);
              }
           
-     printf("\n\n VALORT TOTAL DO ESTOQUE R$ %.2f EM %d ITENS\n",total_geral,qtd_itens_estoque);
+     //printf("\n\n VALOR TOTAL DO ESTOQUE R$ %.2f EM %d ITENS\n",total_geral,qtd_itens_estoque);
      
      }
 
@@ -148,18 +189,19 @@ void gerenciar_menu_produto(PPProduto* estoque,int* qtd_itens_estoque){
 				//getch();
 				break;
 			case 2:
+                system("CLS");
                 printf("\n######################");
 				printf("\nAlterar Produto");
 				printf("\n######################\n");
 				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
-				printf("\n\n ");
+				int cod_alterar = menu_escolha_item(*estoque,*qtd_itens_estoque,"DIGITAR CODIGO QUE DESEJA ALTERAR: ");
 				getch();
 				break;								
 			case 3:
                 system("CLS");
-                printf("\n######################");
+                printf("\n##################################");
 				printf("\nRelacao de produtos no estoque");
-				printf("\n######################\n");
+				printf("\n#################################\n");
 				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
                 sair = 0;
                 getch();
