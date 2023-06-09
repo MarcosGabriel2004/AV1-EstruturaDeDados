@@ -72,17 +72,15 @@ void incluir_produto_estoque(PPProduto* lista,int* qtd_itens_estoque){
 void exibir_produtos_estoque(PPProduto lista,int qtd_itens_estoque){
      printf("\n\n");
      float total_geral = 0.0;
-     for(int i=0; i < qtd_itens_estoque; i++){
+     int i;
+     for(i=0; i < qtd_itens_estoque; i++){
              PProduto prod = lista[i];
              float total_prod = prod->qtd_estoque * prod->preco;
              total_geral += total_prod;
              printf("COD: %d - %s - Qtd em estoque: %d, ",prod->codigo, prod->descricao, prod->qtd_estoque);
              printf("Valor unitario R$ %.2f Total R$ %.2f\n",prod->preco,total_prod);
-            
-            getch();
              }
-             
-             getch();
+          
      printf("\n\n VALORT TOTAL DO ESTOQUE R$ %.2f EM %d ITENS\n",total_geral,qtd_itens_estoque);
      
      }
@@ -143,16 +141,16 @@ void gerenciar_menu_produto(PPProduto* estoque,int* qtd_itens_estoque){
 			case 1:
                 system("CLS");
                 printf("\n######################");
-				printf("Incluindo Produto\n\n");
-				printf("\n######################");
+				printf("\nIncluindo Produto\n\n");
+				printf("\n######################\n");
                 incluir_produto_estoque(estoque,qtd_itens_estoque);
                 sair = 0;  
 				//getch();
 				break;
 			case 2:
                 printf("\n######################");
-				printf("Alterar Produto");
-				printf("\n######################");
+				printf("\nAlterar Produto");
+				printf("\n######################\n");
 				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
 				printf("\n\n ");
 				getch();
@@ -160,8 +158,8 @@ void gerenciar_menu_produto(PPProduto* estoque,int* qtd_itens_estoque){
 			case 3:
                 system("CLS");
                 printf("\n######################");
-				printf("Relacao de produtos no estoque");
-				printf("\n######################");
+				printf("\nRelacao de produtos no estoque");
+				printf("\n######################\n");
 				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
                 sair = 0;
                 getch();
