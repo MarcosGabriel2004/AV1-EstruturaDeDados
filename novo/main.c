@@ -11,11 +11,10 @@ typedef struct produto {
         float preco;
 } Produto, *PProduto,**PPProduto;
 
-
 void incluir_produto_estoque(PPProduto* lista,int* qtd_itens_estoque){
    int novo_indice = -1;
-  
-   
+   //int ultimo_indice = -1;
+   //printf("--->tamanho (%d)",sizeof(*lista));
    if (*qtd_itens_estoque == 0){
             novo_indice = 1;
             *lista = (PPProduto) malloc(sizeof(PProduto)); 
@@ -23,12 +22,15 @@ void incluir_produto_estoque(PPProduto* lista,int* qtd_itens_estoque){
             } 
    else{
         novo_indice = *qtd_itens_estoque+1;
-        *lista = (PPProduto) realloc(*lista, novo_indice*sizeof(PProduto));
+       //ultimo_indice = (*lista)[*qtd_itens_estoque]->codigo + 1;
+      // ultimo_indice
+       //*qtd_itens_estoque += 1;
+       *lista = (PPProduto) realloc(*lista, novo_indice*sizeof(PProduto));
         }
        
         
    if(!lista){ 
-		printf("PROBLEMA NA ALOCAÇÃO DA LSITA\n\n");
+		printf("PROBLEMA NA ALOCAÇÃO DA LISTA\n\n");
 		system("PAUSE");
 		}
 		
@@ -88,6 +90,51 @@ void limparBuffer() {
         // Descartar caractere
     }
 }
+void alterar_item(PPProduto* lista,int qtd_itens_estoque,int cod_item){
+   int i;
+   PProduto produto;  
+   for(i=0;i<qtd_itens_estoque; i++){
+                                if ((*lista)[i]->codigo == cod_item){
+                                produto = (*lista)[i];
+                                }
+   }
+   printf("\n\nDados atuais do produto cod(%d)\n",cod_item);
+   printf("     Descricao: %s\n",produto->descricao);
+   printf("     Quantidade em estoque: %d\n",produto->qtd_estoque);
+   printf("     Valor untario: %.2f\n",produto->preco);
+   
+   printf("\n\n -----------------------\n");
+   
+   printf("\n\n Inserindo novos dados para o produto cod(%d)\n\n",cod_item);
+   printf("Informe a nova Descricao do Produto: "); 
+   scanf(" %[^\n]",produto->descricao);
+   printf("Informe a nova Quantidade em estoque: "); 
+   scanf("%d",&(produto->qtd_estoque));
+   printf("Informe o novo Valor do produto: "); 
+   scanf("%f",&(produto->preco));
+     
+   printf("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); 
+   printf("\n Produto alterado com sucesso!!!");
+   printf("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");   
+     }
+void consultar_item(PPProduto lista,int qtd_itens_estoque,int cod_item){
+   int i;
+   PProduto produto;  
+   for(i=0;i<qtd_itens_estoque; i++){
+                                if (lista[i]->codigo == cod_item){
+                                produto = lista[i];
+                                }
+   }
+   printf("\n\nExibindo dados do produto cod(%d)\n",cod_item);
+   printf("     Descricao: %s\n",produto->descricao);
+   printf("     Quantidade em estoque: %d\n",produto->qtd_estoque);
+   printf("     Valor untario: %.2f\n",produto->preco);
+   printf("     Valor Total do estoque: %.2f\n",produto->preco*produto->qtd_estoque);
+   printf("\n     Pedidos:\n");//IMPLEMENTAR INFORMAÇÕES DOS PEDIDOS DO ITEM
+   printf("     - Nenhum pedido finalizado com este item.\n");    
+   
+     }
+
 int menu_escolha_item(PPProduto lista,int qtd_itens_estoque, char msgm[]){
      if(qtd_itens_estoque == 0 ){
      return 0;
@@ -118,8 +165,8 @@ void exibir_produtos_estoque(PPProduto lista,int qtd_itens_estoque){
              PProduto prod = lista[i];
              float total_prod = prod->qtd_estoque * prod->preco;
              total_geral += total_prod;
-             printf("COD: %d - %s - Qtd em estoque: %d, ",prod->codigo, prod->descricao, prod->qtd_estoque);
-             printf("Valor unitario R$ %.2f Total R$ %.2f\n",prod->preco,total_prod);
+             printf("COD: %d - %s - Qtd em estoque: %d - Preco R$ %.2f\n",prod->codigo, prod->descricao, prod->qtd_estoque,prod->preco);
+             //printf("Preco R$ %.2f Total R$ %.2f\n",prod->preco,total_prod);
              }
           
      //printf("\n\n VALOR TOTAL DO ESTOQUE R$ %.2f EM %d ITENS\n",total_geral,qtd_itens_estoque);
@@ -133,7 +180,8 @@ int menu_principal_opcoes(){
 	printf("\n(2) Gerenciar Pedido");
 	printf("\n(3) Sair");
 	printf("\n\nDigite uma opcao: ");
-	scanf("%d",&opcao);	
+	scanf("%d",&opcao);
+    limparBuffer();	
 	return opcao;
 }
 
@@ -150,7 +198,8 @@ int menu_gerenciar_produto_opcoes(){
 	printf("\n(5) Excluir");
 	printf("\n(6) Voltar");
 	printf("\n\nDigite uma opcao: ");
-	scanf("%d",&opcao);	
+	scanf("%d",&opcao);
+    limparBuffer();	
 	return opcao;
 
 }
@@ -169,7 +218,8 @@ int menu_gerenciar_pedido_opcoes(){
 	printf("\n(6) Esvaziar carrinho de compras");
 	printf("\n(7) Voltar");
 	printf("\n\nDigite uma opcao: ");
-	scanf("%d",&opcao);	
+	scanf("%d",&opcao);
+    limparBuffer();	
 	return opcao;
 }
 
@@ -190,11 +240,19 @@ void gerenciar_menu_produto(PPProduto* estoque,int* qtd_itens_estoque){
 				break;
 			case 2:
                 system("CLS");
-                printf("\n######################");
-				printf("\nAlterar Produto");
-				printf("\n######################\n");
+                printf("\n#################################");
+				printf("\nEscolhendo Produto para alterar");
+				printf("\n#################################\n");
 				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
 				int cod_alterar = menu_escolha_item(*estoque,*qtd_itens_estoque,"DIGITAR CODIGO QUE DESEJA ALTERAR: ");
+				if (cod_alterar){ 
+    				system("CLS");
+                    printf("\n###################################");
+    				printf("\nRealizando a alteracao do Produto");
+    				printf("\n###################################\n");
+    				alterar_item(estoque,*qtd_itens_estoque,cod_alterar);
+                }
+				sair = 0;
 				getch();
 				break;								
 			case 3:
@@ -207,11 +265,36 @@ void gerenciar_menu_produto(PPProduto* estoque,int* qtd_itens_estoque){
                 getch();
 				break;
 			case 4:
-				printf("Consultar Produto");				
-				getch();
+                system("CLS");
+                printf("\n######################");
+				printf("\nConsultar Produto");
+				printf("\n######################\n");
+				
+				if(*qtd_itens_estoque == 0){
+                 printf("\n ---------------------------------------------");
+                 printf("\nNENHUM ITEM NO ESTOQUE CADASTRE ALGUM ITEM.");
+                 printf("\n ---------------------------------------------");
+                }else{
+                int cod_consultar = menu_escolha_item(*estoque,*qtd_itens_estoque,"DIGITAR CODIGO QUE DESEJA CONSULTAR: ");
+                    if (cod_consultar){
+                       system("CLS");
+                       consultar_item(*estoque,*qtd_itens_estoque,cod_alterar);
+                    }
+                }
+                getch();
 				break;
 			case 5:
-				printf("Excluir Produto");
+				system("CLS");
+                printf("\n#################################");
+				printf("\nEscolhendo Produto para Excluir");
+				printf("\n#################################\n");
+				exibir_produtos_estoque(*estoque,*qtd_itens_estoque);
+				int cod_excluir = menu_escolha_item(*estoque,*qtd_itens_estoque,"DIGITAR CODIGO QUE DESEJA CONSULTAR: ");
+                if (cod_excluir){
+                   system("CLS");
+                   //excluir_item(estoque,qtd_itens_estoque,cod_excluir);
+                }
+                sair = 0;
 				getch();
 				break;								
 			case 6:
