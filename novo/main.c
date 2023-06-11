@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MAX_DESC 50
 
@@ -194,7 +195,7 @@ void exibir_produtos_estoque(PPProduto lista,int indice_ult_produto,int visualiz
      printf("\n\n");
      char msg[30]= "NO ESTOQUE CADASTRE";
      if(visualizacao_carrinho){
-                          strcpy(msg,"NO CARRINHO INCLUA ALGUM");
+                          strcpy(msg,"NO CARRINHO INCLUA");
                           }
      
      
@@ -437,6 +438,31 @@ int perguntar_quantidade(PProduto pitem_estoque,int qtd_atual){
      return qtd_desejada;
     
     }
+void atualizar_estoque(PPProduto estoque,int indice_ult_produto_estoque,PPProduto carrinho,int indice_ult_produto_carrinho){
+     int i;
+         
+         for(i=0; i<=indice_ult_produto_carrinho; i++){
+                  
+                  PProduto pItemNoEstoque = NULL;
+                  if (codigo_existe(estoque,indice_ult_produto_estoque,carrinho[i]->codigo,&pItemNoEstoque)){
+                          
+                  pItemNoEstoque->qtd_estoque = pItemNoEstoque->qtd_estoque - carrinho[i]->qtd_estoque; 
+                       }
+                  }
+     
+     
+     }
+    
+void limpar_carrinho(PPProduto* carrinho,int* indice_ult_produto_carrinho){
+         int i;
+         
+         for(i=0; i<=*indice_ult_produto_carrinho; i++){
+         free((*carrinho)[i]);
+         
+         }
+         free((*carrinho));
+         *indice_ult_produto_carrinho = -1;
+     }
 void gerenciar_menu_pedido(PPProduto* estoque,int* indice_ult_produto_estoque,PPProduto* carrinho,int* indice_ult_produto_carrinho){
 	int opcao;
 	int sair = 0;
@@ -486,7 +512,9 @@ void gerenciar_menu_pedido(PPProduto* estoque,int* indice_ult_produto_estoque,PP
                         printf("\n\nIncluir novo Produto?\nDigite: I para inserir novo item (qualquer tecla interrompe a inclusao) -> ");
                         scanf(" %c",&again);
                         limparBuffer();
-                    }
+                    }else{
+                          getch();
+                          }
                 }while(again == 'I' || again == 'i' );				
 				
 				break;
@@ -513,7 +541,9 @@ void gerenciar_menu_pedido(PPProduto* estoque,int* indice_ult_produto_estoque,PP
     			   printf("\n#########################################################\n");
                    
                    excluir_item(carrinho,indice_ult_produto_carrinho,pItem_excluir->codigo);
-                }
+                }else{
+                      getch();
+                      }
 				sair = 0;
 				break;
 			case 4:
@@ -545,16 +575,37 @@ void gerenciar_menu_pedido(PPProduto* estoque,int* indice_ult_produto_estoque,PP
                             scanf(" %c",&opcao);
                             limparBuffer();
                             
-                           }
+                           }else{
+                                 getch();
+                                 }
                    }while(opcao == 's' || opcao == 'S');					
 				//getch();
 				break;
 			case 5:
-				printf("Finalizar Pedido");
+                system("CLS");
+					if(*indice_ult_produto_carrinho < 0){
+                 printf("\n ---------------------------------------------");
+                 printf("\nNENHUM ITEM NO CARRINHO CADASTRE ALGUM ITEM.");
+                 printf("\n ---------------------------------------------");
+                }else{
+				srand(time(0));
+				int Pedido = rand();
+				atualizar_estoque(*estoque,*indice_ult_produto_estoque,*carrinho,*indice_ult_produto_carrinho);
+				limpar_carrinho(carrinho,indice_ult_produto_carrinho);
+				printf("Pedido %d finalizado com sucesso.",Pedido);
+                }
 				getch();
 				break;								
 			case 6:
-				printf("Esvaziar carrinho de compras");
+                system("CLS");
+                	if(*indice_ult_produto_carrinho < 0){
+                 printf("\n ---------------------------------------------");
+                 printf("\nNENHUM ITEM NO CARRINHO CADASTRE ALGUM ITEM.");
+                 printf("\n ---------------------------------------------");
+                }else{
+				printf("Carrinho foi apagado com sucesso!");
+				limpar_carrinho(carrinho,indice_ult_produto_carrinho);
+            }
 				getch();
 				break;								
 			case 7:
@@ -582,7 +633,7 @@ void gerenciar_menu_principal(PPProduto* estoque,int* indice_ult_produto_estoque
 				break;
 			case 2:			
 				gerenciar_menu_pedido(estoque,indice_ult_produto_estoque,carrinho,indice_ult_produto_carrinho);
-				getch();
+				//getch();
 				break;								
 			case 3:
 				printf("Sair");
