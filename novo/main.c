@@ -83,7 +83,6 @@ int gerar_codigo(PPProduto* lista,int indice_ult_produto){
     }
     
 void aumentar_lista_pedidos(PPPedido* lista,int* indice_ult_pedido_finalizado){
-     
      if (*indice_ult_pedido_finalizado < 0){
             *lista = (PPPedido) malloc(2*sizeof(PPedido));
             
@@ -91,13 +90,13 @@ void aumentar_lista_pedidos(PPPedido* lista,int* indice_ult_pedido_finalizado){
      else{
             *lista = (PPPedido) realloc(*lista, (*indice_ult_pedido_finalizado+2)*sizeof(PPedido));
          }
-       
         
      if(!lista){ 
 		printf("PROBLEMA NA ALOCAÇÃO DA LISTA\n\n");
 		system("PAUSE");
 		}
-     *indice_ult_pedido_finalizado = *indice_ult_pedido_finalizado + 1;
+	 *indice_ult_pedido_finalizado = *indice_ult_pedido_finalizado + 1;
+     (*lista)[*indice_ult_pedido_finalizado] = (PPedido)malloc(sizeof(Pedido));  
      (*lista)[*indice_ult_pedido_finalizado]->indice_ult_produto_pedido = -1;
      
   }
@@ -185,16 +184,16 @@ void consultar_item(PProduto pitem, Loja* pLoja){
    if(pLoja->indice_ult_pedido_finalizado >=0){
    int i;
    for(i=0;i<=pLoja->indice_ult_pedido_finalizado;i++){
-                                                       printf("Entrei no for 1");
+                                                    
           int j;
           for(j=0;j<=pLoja->pedidos_finalizados[i]->indice_ult_produto_pedido;j++){
-                                                                        printf("Entrei no for 2");
+                                                                      
               PProduto produtos_do_pedido =  pLoja->pedidos_finalizados[i]->produtos[j];                                                         
               if(produtos_do_pedido->codigo == pitem->codigo){
                                                              int qtd = produtos_do_pedido->qtd_estoque;
                                                              float total = qtd * produtos_do_pedido->preco;
                                                              int num_pedido = pLoja->pedidos_finalizados[i]->numero_pedido;
-                                                             printf("     - %d unidades vendidas por R$ %.2f no pedido Numero '%d'.\n",qtd,total,num_pedido);          
+                                                             printf("          - %d unidades vendidas por R$ %.2f no pedido Numero '%d'.\n",qtd,total,num_pedido);          
               } 
           }                                            
    }
@@ -659,25 +658,26 @@ void gerenciar_menu_pedido(Loja* pLoja){
     				printf("\n- Numero do pedido %d gerado;",Pedido);
     				atualizar_estoque(*estoque,*indice_ult_produto_estoque,*carrinho,*indice_ult_produto_carrinho);
     				printf("\n- Estoque atualizado;");
+    			
     				aumentar_lista_pedidos(pedidos,indice_ult_pedido_finalizado);//(vetor não alocado, -1)
-    				//( alocado, 0)
+    			
     				printf("\n- Tamanho da lista de pedidos atualizada;");
     				(*pedidos)[*indice_ult_pedido_finalizado]->numero_pedido = Pedido;
     				int i;
     				
-    			//	PPedido pedido_atual = (*pedidos)[*indice_ult_pedido_finalizado];
-    			//	PPProduto lista_produtos_pedido_atual = pedido_atual->produtos; //aqui ele gaudou o código certo
-    			//	PPProduto* plista_produtos_pedido_atual = &pedido_atual->produtos;
-   				   // int indice_ult_produto_pedido_finalizado_atual = pedido_atual->indice_ult_produto_pedido;
-   				   // int* pindice_ult_produto_pedido_finalizado_atual = &indice_ult_produto_pedido_finalizado_atual;
-   				   system("PAUSE");
-   				    (*pedidos)[*indice_ult_pedido_finalizado]->produtos = (PPProduto)malloc((*indice_ult_produto_carrinho+2) * sizeof(PProduto));
-   				    system("PAUSE");
+    
+   			
+   				   PPProduto produtos_do_pedido = (PPProduto)malloc((*indice_ult_produto_carrinho+2) * sizeof(PProduto));
+   				   if(!produtos_do_pedido){ 
+                            	printf("PROBLEMA NA ALOCAÇÃO DO PRODUTO\n\n");
+                            	system("PAUSE");
+                        	}
+                    (*pedidos)[*indice_ult_pedido_finalizado]->produtos = (PPProduto)malloc((*indice_ult_produto_carrinho+2) * sizeof(PProduto));
    				    (*pedidos)[*indice_ult_pedido_finalizado]->indice_ult_produto_pedido = *indice_ult_produto_carrinho;
     				for(i=0;i<=*indice_ult_produto_carrinho;i++){
                            //aumentar_lista(plista_produtos_pedido_atual,pindice_ult_produto_pedido_finalizado_atual);
                            printf("\n-(%d) %d %s vendido(s);",(*carrinho)[i]->codigo,(*carrinho)[i]->qtd_estoque,(*carrinho)[i]->descricao);
-                           system("PAUSE");
+                         
                            PProduto produto_vendido = (PProduto) malloc(sizeof(Produto));
                            //PProduto produto = (PProduto) malloc(sizeof(Produto));
                            if(!produto_vendido){ 
@@ -695,9 +695,9 @@ void gerenciar_menu_pedido(Loja* pLoja){
     				limpar_carrinho(carrinho,indice_ult_produto_carrinho);
     				
     				printf("\n- Carrinho esvaziado;");
-    				system("PAUSE");
+    	
     				
-    			printf("\nPedido produto(%d) finalizado com sucesso!!!!",pLoja->pedidos_finalizados[0]->produtos[0]->codigo);	
+    			printf("\nPedido finalizado com sucesso!!!!");	
                 }
 				getch();
 				sair = 0;
